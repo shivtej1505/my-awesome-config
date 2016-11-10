@@ -11,6 +11,8 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 
+local lain = require("lain")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -38,7 +40,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/shivang/theme.lua")	
 
 -- This is used later as the default terminal and editor to run.
 terminal = "gnome-terminal"
@@ -46,6 +48,7 @@ editor = os.getenv("EDITOR") or "nano" or "vim"
 editor_cmd = terminal .. " -e " .. editor
 browser = "firefox"
 gui_editor = "gedit"
+nautilus = "nautilus"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -81,6 +84,7 @@ if beautiful.wallpaper then
 end
 -- }}}
 
+
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
 tags = {
@@ -104,19 +108,83 @@ myawesomemenu = {
 mymainmenu = awful.menu({ items = { --{ "awesome", myawesomemenu, beautiful.awesome_icon },
                                     { "Terminal", terminal },
 									{ "Firefox", browser },
+									{ "Nautilus", nautilus },
 									{ "Gedit", gui_editor }
                                   }
                         })
 
 mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
                                      menu = mymainmenu })
+path = os.getenv("HOME") .. "/.config/awesome/themes/shivang"
+-- Custom
+myIcon = wibox.widget.imagebox()
+myIcon:set_image(path .. "/rocket.png")
+
+myText = wibox.widget.textbox()
+myText:set_text("@shivtej")
+
+seperator = wibox.widget.textbox()
+seperator:set_text(" ")
 
 -- Menubar configuration
 menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
--- Create a textclock widget
+
+-- Battery widget
+--battery_icon = wibox.widget.imagebox()
+--battery_icon:set_image()
+
+-- Battery
+gray   = "#858585"
+batwidget = lain.widgets.bat({
+    settings = function()
+		label = " Battery "
+        bat_p      = bat_now.perc .. " " 
+        widget:set_markup('<span color="#858585">' .. label .. bat_p .. '</span>')
+    end 
+})
+
+-- ALSA Volume
+volumewidget = lain.widgets.alsa({
+    settings = function()
+        label = " Vol "
+        vlevel  = volume_now.level
+
+        if volume_now.status == "off" then
+            vlevel = vlevel .. "M "
+        else
+            vlevel = vlevel .. " " 
+        end 
+
+        widget:set_markup('<span color="#858585">' .. label .. vlevel .. '</span>')
+    end 
+})
+
+-- Wallpaper Switcher
+wall_dir = "home/shivang/Pictures/flowers.jpg"
+theme.wallpaper = wall_dir
+count = 0
+mytimer = timer({ timeout = 5 })
+mytimer:connect_signal("timeout", function()
+										if count == 0 then					
+											beautiful.wallpaper = wall_dir .. count .. ".jpg"
+										elseif count == 1 then
+											beautiful.wallpaper = wall_dir .. count .. ".jpg"
+										elseif count == 2 then
+											beautiful.wallpaper = wall_dir .. count .. ".jpg"
+										elseif count == 3 then
+											beautiful.wallpaper = wall_dir .. count .. ".jpg"
+										elseif count == 4 then
+											beautiful.wallpaper = wall_dir .. count .. ".jpg"
+										end
+										count = count + 1
+										count = count%5	
+								  end)
+mytimer:start()
+
+-- Clock widget
 mytextclock = awful.widget.textclock()
 
 -- Create a wibox for each screen and add it
@@ -191,13 +259,20 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
-    left_layout:add(mylauncher)
+    --left_layout:add(mylauncher)
+    left_layout:add(seperator)
+    left_layout:add(myIcon)
+    left_layout:add(seperator)
+    left_layout:add(myText)
+    left_layout:add(seperator)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
     if s == 1 then right_layout:add(wibox.widget.systray()) end
+    right_layout:add(batwidget)
+    right_layout:add(volumewidget)
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
 
