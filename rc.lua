@@ -42,6 +42,8 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/shivang/theme.lua")	
 
+--beautiful.wallpaper = "home/shivang/Pictures/flowers.jpg"
+
 -- This is used later as the default terminal and editor to run.
 terminal = "gnome-terminal"
 editor = os.getenv("EDITOR") or "nano" or "vim"
@@ -80,8 +82,9 @@ local layouts =
 if beautiful.wallpaper then
     for s = 1, screen.count() do
         gears.wallpaper.maximized(beautiful.wallpaper, s, true)
-    end
+    end 
 end
+
 -- }}}
 
 
@@ -182,24 +185,18 @@ volume_widget = lain.widgets.alsa({
 })
 
 -- Wallpaper Switcher
-wall_dir = "home/shivang/Pictures/flowers.jpg"
-theme.wallpaper = wall_dir
-count = 0
-mytimer = timer({ timeout = 5 })
+wall_dir = "/home/shivang/Pictures/HD13"
+count = 39
+mytimer = timer({ timeout = 60*20 })
 mytimer:connect_signal("timeout", function()
-	if count == 0 then					
-		beautiful.wallpaper = wall_dir .. count .. ".jpg"
-	elseif count == 1 then
-		beautiful.wallpaper = wall_dir .. count .. ".jpg"
-	elseif count == 2 then
-		beautiful.wallpaper = wall_dir .. count .. ".jpg"
-	elseif count == 3 then
-		beautiful.wallpaper = wall_dir .. count .. ".jpg"
-	elseif count == 4 then
-		beautiful.wallpaper = wall_dir .. count .. ".jpg"
-	end
+	beautiful.wallpaper = wall_dir .. count .. ".jpg"
 	count = count + 1
-	count = count%5	
+	if count == 64 then
+		count = 39
+	end
+    for s = 1, screen.count() do
+        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
+    end 
 end)
 mytimer:start()
 
