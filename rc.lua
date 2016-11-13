@@ -42,8 +42,6 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/shivang/theme.lua")	
 
---beautiful.wallpaper = "home/shivang/Pictures/flowers.jpg"
-
 -- This is used later as the default terminal and editor to run.
 terminal = "gnome-terminal"
 editor = os.getenv("EDITOR") or "nano" or "vim"
@@ -51,6 +49,7 @@ editor_cmd = terminal .. " -e " .. editor
 browser = "firefox"
 gui_editor = "gedit"
 nautilus = "nautilus"
+stocker = "python ~/stocker.py"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -187,7 +186,7 @@ volume_widget = lain.widgets.alsa({
 -- Wallpaper Switcher
 wall_dir = "/home/shivang/Pictures/HD13"
 count = 39
-mytimer = timer({ timeout = 60*20 })
+mytimer = timer({ timeout = 300 })
 mytimer:connect_signal("timeout", function()
 	beautiful.wallpaper = wall_dir .. count .. ".jpg"
 	count = count + 1
@@ -351,6 +350,34 @@ awful.key({ altkey, "Control" }, "t", function () awful.util.spawn(terminal) end
 awful.key({ altkey, "Control" }, "f", function () awful.util.spawn(browser) end),
 awful.key({ altkey, "Control" }, "e", function () awful.util.spawn(gui_editor) end),
 awful.key({ modkey, "Control" }, "r", awesome.restart),
+-- Fun Notify
+awful.key({ altkey, "Control" }, "n", function ()
+										awful.util.spawn(stocker)
+
+										file = io.open('sbi_blue_chip_nav')
+										s = file:read()
+										file:close()
+										local words = {}
+										response = string.gmatch(s, "[^:]+")
+										local i = 0
+										for data in response do
+											words[i] = data
+											i = i+1
+										end
+
+										fund_name = words[0]
+										nav = words[1]
+										date = words[2]
+
+    									naughty.notify({ preset = naughty.config.presets.critical,
+										timeout = 10,
+										icon = path .. "/rocket.png",
+                     					title = fund_name,
+										text = nav .. "\n" .. date,
+										bg = "#2fd87b",
+										margin = 10})
+									  end),
+
 
 -- Don't uncommet
 -- awful.key({ modkey, "Shift"   }, "q", awesome.quit),
