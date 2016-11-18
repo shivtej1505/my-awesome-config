@@ -50,6 +50,7 @@ browser = "firefox"
 gui_editor = "gedit"
 nautilus = "nautilus"
 stocker = "python ~/stocker.py"
+network_manager = "nm-applet &"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -352,7 +353,7 @@ awful.key({ altkey, "Control" }, "e", function () awful.util.spawn(gui_editor) e
 awful.key({ modkey, "Control" }, "r", awesome.restart),
 -- Fun Notify
 awful.key({ altkey, "Control" }, "n", function ()
-										awful.util.spawn(stocker)
+										awful.util.spawn_with_shell(stocker)
 
 										file = io.open('sbi_blue_chip_nav')
 										s = file:read()
@@ -377,7 +378,6 @@ awful.key({ altkey, "Control" }, "n", function ()
 										bg = "#2fd87b",
 										margin = 10})
 									  end),
-
 
 -- Don't uncommet
 -- awful.key({ modkey, "Shift"   }, "q", awesome.quit),
@@ -471,6 +471,10 @@ for i = 1, 9 do
 		end
 	end))
 end
+
+-- Run startup program
+awful.util.spawn_with_shell(network_manager)
+
 
 clientbuttons = awful.util.table.join(
 awful.button({ }, 1, function (c) client.focus = c; c:raise() end),
